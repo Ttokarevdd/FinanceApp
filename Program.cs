@@ -300,15 +300,6 @@ namespace FinanceApp
                 Категория = t.Category,
                 Дата = t.Date
             }).ToList();
-
-            if (dgvTransactions.Columns.Count > 0)
-            {
-                dgvTransactions.Columns["Id"].Width = 50;
-                dgvTransactions.Columns["Тип"].Width = 70;
-                dgvTransactions.Columns["Сумма"].Width = 100;
-                dgvTransactions.Columns["Категория"].Width = 150;
-                dgvTransactions.Columns["Дата"].Width = 150;
-            }
         }
 
         private void BtnAddIncome_Click(object sender, EventArgs e)
@@ -359,7 +350,7 @@ namespace FinanceApp
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            int id = (int)dgvTransactions.SelectedRows[0].Cells["Id"].Value;
+            int id = (int)dgvTransactions.SelectedRows[0].Cells[0].Value;
             DialogResult result = MessageBox.Show($"Удалить транзакцию ID {id}?", "Подтверждение",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
