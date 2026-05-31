@@ -8,6 +8,18 @@
 4) Добавьте код из Program.cs в одноименный файл
 5) Сохраните и запустите приложение
 
+
+FINANCE TRACKING SYSTEM APP
+Author: Tokarev Dmitry
+
+Instructions:
+1) Open Visual Studio
+2) Select "Create a console application"
+3) Right-click on the project name in Solution Explorer, then select "Edit Project File" and replace all the code with the one at the end of this README. Save changes with Ctrl+S
+4) Add the code from Programeng.cs to the file with the same name
+5) Save and run the application
+
+
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
