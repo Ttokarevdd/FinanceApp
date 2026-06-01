@@ -1,0 +1,19 @@
+{
+    "transactions": [
+        {
+            "id": 1,
+            "type": "income",
+            "amount": 50000.0,
+            "category": "Зарплата",
+            "date": "2026-05-29 10:15:00"
+        },
+        {
+            "id": 2,
+            "type": "expense",
+            "amount": 2500.0,
+            "category": "Продукты",
+            "date": "2026-05-29 14:30:00"
+        }
+    ],
+    "balance": 47500.0
+}
