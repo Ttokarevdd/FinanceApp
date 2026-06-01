@@ -27,17 +27,41 @@ namespace FinanceApp
     {
         private FinanceData data;
         private string dataFilePath = "finance_data.json";
+        private string currentFilter = null;
+
+        private List<string> incomeCategories = new List<string>
+        {
+            "Зарплата",
+            "Подработка",
+            "Подарок",
+            "Продажа",
+            "Инвестиции",
+            "Прочее"
+        };
+
+        private List<string> expenseCategories = new List<string>
+        {
+            "Продукты",
+            "Транспорт",
+            "Жильё",
+            "Развлечения",
+            "Здоровье",
+            "Одежда",
+            "Связь",
+            "Прочее"
+        };
 
         private Label lblTitle;
         private Label lblAuthor;
         private Label lblBalance;
         private Label lblAmount;
         private Label lblCategory;
+        private Label lblType;
         private Label lblFilter;
         private TextBox txtAmount;
-        private TextBox txtCategory;
-        private Button btnAddIncome;
-        private Button btnAddExpense;
+        private ComboBox cmbCategory;
+        private ComboBox cmbType;
+        private Button btnAdd;
         private Button btnDelete;
         private Button btnFilter;
         private Button btnClearFilter;
@@ -61,11 +85,12 @@ namespace FinanceApp
             lblBalance = new Label();
             lblAmount = new Label();
             lblCategory = new Label();
+            lblType = new Label();
             lblFilter = new Label();
             txtAmount = new TextBox();
-            txtCategory = new TextBox();
-            btnAddIncome = new Button();
-            btnAddExpense = new Button();
+            cmbCategory = new ComboBox();
+            cmbType = new ComboBox();
+            btnAdd = new Button();
             btnDelete = new Button();
             btnFilter = new Button();
             btnClearFilter = new Button();
@@ -100,31 +125,38 @@ namespace FinanceApp
             lblBalance.Location = new Point(20, 75);
             lblBalance.Size = new Size(400, 25);
 
-            lblAmount.Text = "Сумма:";
-            lblAmount.Location = new Point(20, 120);
-            lblAmount.Size = new Size(80, 20);
+            lblType.Text = "Тип:";
+            lblType.Location = new Point(20, 120);
+            lblType.Size = new Size(30, 20);
 
-            txtAmount.Location = new Point(100, 117);
-            txtAmount.Size = new Size(120, 23);
+            cmbType.Location = new Point(55, 117);
+            cmbType.Size = new Size(100, 23);
+            cmbType.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbType.Items.Add("Доход");
+            cmbType.Items.Add("Расход");
+            cmbType.SelectedIndex = 0;
+            cmbType.SelectedIndexChanged += CmbType_SelectedIndexChanged;
+
+            lblAmount.Text = "Сумма:";
+            lblAmount.Location = new Point(170, 120);
+            lblAmount.Size = new Size(50, 20);
+
+            txtAmount.Location = new Point(225, 117);
+            txtAmount.Size = new Size(100, 23);
 
             lblCategory.Text = "Категория:";
-            lblCategory.Location = new Point(240, 120);
-            lblCategory.Size = new Size(80, 20);
+            lblCategory.Location = new Point(340, 120);
+            lblCategory.Size = new Size(65, 20);
 
-            txtCategory.Location = new Point(320, 117);
-            txtCategory.Size = new Size(120, 23);
+            cmbCategory.Location = new Point(410, 117);
+            cmbCategory.Size = new Size(130, 23);
+            cmbCategory.DropDownStyle = ComboBoxStyle.DropDownList;
 
-            btnAddIncome.Text = "Добавить доход";
-            btnAddIncome.Location = new Point(460, 115);
-            btnAddIncome.Size = new Size(120, 28);
-            btnAddIncome.BackColor = Color.LightGreen;
-            btnAddIncome.Click += BtnAddIncome_Click;
-
-            btnAddExpense.Text = "Добавить расход";
-            btnAddExpense.Location = new Point(590, 115);
-            btnAddExpense.Size = new Size(120, 28);
-            btnAddExpense.BackColor = Color.LightCoral;
-            btnAddExpense.Click += BtnAddExpense_Click;
+            btnAdd.Text = "Добавить";
+            btnAdd.Location = new Point(560, 115);
+            btnAdd.Size = new Size(120, 28);
+            btnAdd.BackColor = Color.LightGreen;
+            btnAdd.Click += BtnAdd_Click;
 
             btnDelete.Text = "Удалить";
             btnDelete.Location = new Point(20, 160);
@@ -133,26 +165,26 @@ namespace FinanceApp
             btnDelete.Click += BtnDelete_Click;
 
             lblFilter.Text = "Фильтр:";
-            lblFilter.Location = new Point(140, 165);
+            lblFilter.Location = new Point(135, 165);
             lblFilter.Size = new Size(50, 20);
 
-            cmbFilterCategory.Location = new Point(190, 162);
+            cmbFilterCategory.Location = new Point(185, 162);
             cmbFilterCategory.Size = new Size(150, 23);
             cmbFilterCategory.DropDownStyle = ComboBoxStyle.DropDownList;
 
             btnFilter.Text = "Применить";
-            btnFilter.Location = new Point(350, 160);
+            btnFilter.Location = new Point(345, 160);
             btnFilter.Size = new Size(90, 28);
             btnFilter.Click += BtnFilter_Click;
 
             btnClearFilter.Text = "Сбросить";
-            btnClearFilter.Location = new Point(450, 160);
+            btnClearFilter.Location = new Point(445, 160);
             btnClearFilter.Size = new Size(90, 28);
             btnClearFilter.Click += BtnClearFilter_Click;
 
             btnRefresh.Text = "Обновить";
-            btnRefresh.Location = new Point(570, 160);
-            btnRefresh.Size = new Size(140, 28);
+            btnRefresh.Location = new Point(545, 160);
+            btnRefresh.Size = new Size(135, 28);
             btnRefresh.BackColor = Color.LightBlue;
             btnRefresh.Click += BtnRefresh_Click;
 
@@ -168,12 +200,13 @@ namespace FinanceApp
             Controls.Add(lblTitle);
             Controls.Add(lblAuthor);
             Controls.Add(lblBalance);
+            Controls.Add(lblType);
+            Controls.Add(cmbType);
             Controls.Add(lblAmount);
             Controls.Add(txtAmount);
             Controls.Add(lblCategory);
-            Controls.Add(txtCategory);
-            Controls.Add(btnAddIncome);
-            Controls.Add(btnAddExpense);
+            Controls.Add(cmbCategory);
+            Controls.Add(btnAdd);
             Controls.Add(btnDelete);
             Controls.Add(lblFilter);
             Controls.Add(cmbFilterCategory);
@@ -181,6 +214,30 @@ namespace FinanceApp
             Controls.Add(btnClearFilter);
             Controls.Add(btnRefresh);
             Controls.Add(dgvTransactions);
+
+            UpdateCategoryComboBox();
+        }
+
+        private void CmbType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCategoryComboBox();
+        }
+
+        private void UpdateCategoryComboBox()
+        {
+            cmbCategory.Items.Clear();
+            if (cmbType.SelectedItem != null && cmbType.SelectedItem.ToString() == "Доход")
+            {
+                foreach (string cat in incomeCategories)
+                    cmbCategory.Items.Add(cat);
+            }
+            else
+            {
+                foreach (string cat in expenseCategories)
+                    cmbCategory.Items.Add(cat);
+            }
+            if (cmbCategory.Items.Count > 0)
+                cmbCategory.SelectedIndex = 0;
         }
 
         private void LoadData()
@@ -277,18 +334,20 @@ namespace FinanceApp
                 cmbFilterCategory.Items.Add(cat);
             if (selected != null && cmbFilterCategory.Items.Contains(selected))
                 cmbFilterCategory.SelectedItem = selected;
+            else if (currentFilter != null && cmbFilterCategory.Items.Contains(currentFilter))
+                cmbFilterCategory.SelectedItem = currentFilter;
             else
                 cmbFilterCategory.SelectedIndex = 0;
         }
 
-        private void UpdateTransactionsGrid(string filterCategory = null)
+        private void UpdateTransactionsGrid()
         {
             List<Transaction> displayList;
-            if (string.IsNullOrEmpty(filterCategory) || filterCategory == "Все категории")
+            if (string.IsNullOrEmpty(currentFilter) || currentFilter == "Все категории")
                 displayList = data.Transactions;
             else
                 displayList = data.Transactions
-                    .Where(t => t.Category.Equals(filterCategory, StringComparison.OrdinalIgnoreCase))
+                    .Where(t => t.Category.Equals(currentFilter, StringComparison.OrdinalIgnoreCase))
                     .ToList();
 
             dgvTransactions.DataSource = null;
@@ -302,7 +361,7 @@ namespace FinanceApp
             }).ToList();
         }
 
-        private void BtnAddIncome_Click(object sender, EventArgs e)
+        private void BtnAdd_Click(object sender, EventArgs e)
         {
             if (!decimal.TryParse(txtAmount.Text, out decimal amount) || amount <= 0)
             {
@@ -310,36 +369,19 @@ namespace FinanceApp
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string category = txtCategory.Text.Trim();
-            if (string.IsNullOrEmpty(category))
-            {
-                MessageBox.Show("Введите категорию!", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            AddTransaction("income", amount, category);
-            txtAmount.Clear();
-            txtCategory.Clear();
-        }
 
-        private void BtnAddExpense_Click(object sender, EventArgs e)
-        {
-            if (!decimal.TryParse(txtAmount.Text, out decimal amount) || amount <= 0)
+            if (cmbCategory.SelectedItem == null)
             {
-                MessageBox.Show("Введите корректную сумму!", "Ошибка",
+                MessageBox.Show("Выберите категорию!", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string category = txtCategory.Text.Trim();
-            if (string.IsNullOrEmpty(category))
-            {
-                MessageBox.Show("Введите категорию!", "Ошибка",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            AddTransaction("expense", amount, category);
+
+            string type = cmbType.SelectedItem.ToString() == "Доход" ? "income" : "expense";
+            string category = cmbCategory.SelectedItem.ToString();
+
+            AddTransaction(type, amount, category);
             txtAmount.Clear();
-            txtCategory.Clear();
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
@@ -359,12 +401,13 @@ namespace FinanceApp
 
         private void BtnFilter_Click(object sender, EventArgs e)
         {
-            string selected = cmbFilterCategory.SelectedItem?.ToString();
-            UpdateTransactionsGrid(selected);
+            currentFilter = cmbFilterCategory.SelectedItem?.ToString();
+            UpdateTransactionsGrid();
         }
 
         private void BtnClearFilter_Click(object sender, EventArgs e)
         {
+            currentFilter = null;
             cmbFilterCategory.SelectedIndex = 0;
             UpdateTransactionsGrid();
         }
